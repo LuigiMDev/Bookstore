@@ -20,9 +20,6 @@ namespace Bookstore.Models
             Id = id;
             Name = name;
         }
-
-
-
     }
 }
     
