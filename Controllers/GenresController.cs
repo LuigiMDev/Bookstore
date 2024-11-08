@@ -26,16 +26,24 @@ namespace Bookstore.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Create(Genre genre)
+        public async Task<IActionResult> Create(Genre genre)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
 
+            await _service.Create(genre);
 
+            return RedirectToAction(nameof(Index));
+        }
 
-            return RedirectToAction("Index");
+        [HttpDelete]
+        public async Task<IActionResult> Delete(Genre genre)
+        {
+            await _service.Delete(genre.Id);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }
