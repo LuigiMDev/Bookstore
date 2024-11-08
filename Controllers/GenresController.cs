@@ -38,10 +38,10 @@ namespace Bookstore.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpDelete]
-        public async Task<IActionResult> Delete(Genre genre)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            await _service.Delete(genre.Id);
+            await _service.Delete(id);
 
             return RedirectToAction(nameof(Index));
         }
