@@ -26,8 +26,14 @@ namespace Bookstore.Services
 
         public async Task Delete(int id)
         {
-            Genre genero = await _context.Genres.FirstOrDefaultAsync(gen => gen.Id == id);
-            _context.Genres.Remove(genero);
+            Genre genre = await _context.Genres.FirstOrDefaultAsync(gen => gen.Id == id);
+            _context.Genres.Remove(genre);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task Edit(Genre genreEdited)
+        {
+            _context.Genres.Update(genreEdited);
             await _context.SaveChangesAsync();
         }
     }

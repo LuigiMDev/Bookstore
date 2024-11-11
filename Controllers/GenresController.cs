@@ -38,11 +38,30 @@ namespace Bookstore.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Delete(int id)
         {
             await _service.Delete(id);
 
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Edit()
+        {
+            return View();
+        }
+
+        [HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(Genre genre, int id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+            genre.Id = id;
+            await _service.Edit(genre);
             return RedirectToAction(nameof(Index));
         }
     }

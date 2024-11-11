@@ -40,13 +40,15 @@
 					   asp-route-id="@genre.Id">
 						<i class="bi bi-pencil-fill"></i>
 					</a>
-					<a type="button"
+					<form method="post" class="d-inline">
+					<button type="submit"
 					   title="Apagar"
 					   class="btn btn-outline-danger px-2 py-1 rounded mx-1"
 					   asp-action="Delete"
 					   asp-route-id="@genre.Id">
 						<i class="bi bi-trash-fill"></i>
-					</a>
+					</button>
+					</form>
 				</td>
 			</tr>
 		}
