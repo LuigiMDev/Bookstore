@@ -1,6 +1,7 @@
 ﻿using Bookstore.Data;
 using Bookstore.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace Bookstore.Services
 {
@@ -13,9 +14,9 @@ namespace Bookstore.Services
             _context = context;
         }
 
-        public List<Genre> FindAll()
+        public async Task<List<Genre>> FindAllAsync()
         {
-            return _context.Genres.ToList();
+            return await _context.Genres.ToListAsync();
         }
 
         public async Task Create(Genre genre)
@@ -35,6 +36,11 @@ namespace Bookstore.Services
         {
             _context.Genres.Update(genreEdited);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Genre> Details (int id)
+        {
+            return await _context.Genres.FirstOrDefaultAsync (gen => gen.Id == id);
         }
     }
 }

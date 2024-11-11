@@ -14,14 +14,26 @@ namespace Bookstore.Controllers
             _service = service;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View(_service.FindAll());
+            return View(await _service.FindAllAsync());
         }
 
         public IActionResult Create() 
         { 
             return View();
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            Genre genre = await _service.Details(id);
+
+            if (genre == null)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(genre);
         }
 
         [HttpPost]
