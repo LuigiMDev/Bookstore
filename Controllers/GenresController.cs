@@ -1,7 +1,10 @@
 ﻿using Bookstore.Data;
 using Bookstore.Models;
+using Bookstore.Models.ViewModels;
 using Bookstore.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.DotNet.Scaffolding.Shared.Messaging;
+using System.Diagnostics;
 
 namespace Bookstore.Controllers
 {
@@ -52,16 +55,37 @@ namespace Bookstore.Controllers
 
         [HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Delete(int id)
+		public async Task<IActionResult> Delete(int? id)
         {
-            await _service.Delete(id);
+            if(id is null)
+            {
+                return RedirectToAction(nameof(Error), new { message = "id não fornecido" });
+            }
+            Genre genre = await _service.FindById(id.Value);
+            if (genre is null)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
+			}
+
+            await _service.Delete(id.Value);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Edit()
+        public async Task<IActionResult> Edit(int? id)
         {
-            return View();
+
+			if (id is null)
+			{
+				return RedirectToAction(nameof(Error), new { message = "id não fornecido" });
+			}
+			Genre genre = await _service.FindById(id.Value);
+			if (genre is null)
+			{
+				return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
+			}
+
+			return View(genre);
         }
 
         [HttpPost]
@@ -75,6 +99,16 @@ namespace Bookstore.Controllers
             genre.Id = id;
             await _service.Edit(genre);
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Error(string message)
+        {
+            var viewModel = new ErrorViewModel
+            {
+				Message = message,
+                RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier
+            };
+            return View(viewModel);
         }
     }
 }

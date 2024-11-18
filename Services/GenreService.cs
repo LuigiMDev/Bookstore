@@ -1,7 +1,9 @@
 ﻿using Bookstore.Data;
 using Bookstore.Models;
+using Bookstore.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
+using NuGet.Packaging.Signing;
 
 namespace Bookstore.Services
 {
@@ -27,15 +29,27 @@ namespace Bookstore.Services
 
         public async Task Delete(int id)
         {
-            Genre genre = await _context.Genres.FirstOrDefaultAsync(gen => gen.Id == id);
-            _context.Genres.Remove(genre);
-            await _context.SaveChangesAsync();
+            try
+            {
+				Genre genre = await _context.Genres.FirstOrDefaultAsync(gen => gen.Id == id);
+				_context.Genres.Remove(genre);
+				await _context.SaveChangesAsync();
+			} catch (DbUpdateException ex)
+            {
+                throw new IntegrityException(ex.Message);
+            }
+            
         }
 
         public async Task Edit(Genre genreEdited)
         {
             _context.Genres.Update(genreEdited);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<Genre> FindById(int id)
+        {
+            return await _context.Genres.FindAsync(id);
         }
 
         public async Task<Genre> Details (int id)

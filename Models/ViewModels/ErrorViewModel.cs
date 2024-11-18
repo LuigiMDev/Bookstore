@@ -2,7 +2,7 @@ namespace Bookstore.Models.ViewModels
 {
     public class ErrorViewModel
     {
-		internal string Message;
+		public string? Message { get; set; }
 
 		public string? RequestId { get; set; }
 
