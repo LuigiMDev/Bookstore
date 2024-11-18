@@ -43,8 +43,22 @@ namespace Bookstore.Services
 
         public async Task Edit(Genre genreEdited)
         {
-            _context.Genres.Update(genreEdited);
-            await _context.SaveChangesAsync();
+            bool hasAny = await _context.Genres.AnyAsync(x => x.Id == genreEdited.Id);
+
+            if (!hasAny)
+            {
+                throw new NotFoundException("Id não encontrado");
+            }
+
+            try
+            {
+				_context.Genres.Update(genreEdited);
+				await _context.SaveChangesAsync();
+			} catch(DbUpdateException ex)
+            {
+                throw new DbConcorrencyException(ex.Message);
+            }
+            
         }
 
         public async Task<Genre> FindById(int id)
