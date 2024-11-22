@@ -17,6 +17,45 @@
             @Html.DisplayFor(model => model.Name)
         </dd>
     </dl>
+    <hr />
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <h3 class="panel-title h5">Livros</h3>
+        </div>
+        <div class="panel-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Books.FirstOrDefault().Title)</th>
+                        <th>@Html.DisplayNameFor(model => model.Books.FirstOrDefault().Price)</th>
+                        <th>@Html.DisplayNameFor(model => model.Books.FirstOrDefault().Author)</th>
+                        <th>@Html.DisplayNameFor(model => model.Books.FirstOrDefault().ReleaseYear)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Book Book in Model.Books)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-controller="Books" asp-action="Details" asp-route-id="@Book.Id">
+                                    @Html.DisplayFor(book => Book.Title)
+                                </a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(book => Book.Price)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(book => Book.Author)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(book => Book.ReleaseYear)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model?.Id">Editar</a> |

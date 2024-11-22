@@ -68,7 +68,7 @@ namespace Bookstore.Services
 
         public async Task<Genre> Details (int id)
         {
-            return await _context.Genres.FirstOrDefaultAsync (gen => gen.Id == id);
+            return await _context.Genres.Include(gen => gen.Books).FirstOrDefaultAsync(gen => gen.Id == id);
         }
     }
 }
