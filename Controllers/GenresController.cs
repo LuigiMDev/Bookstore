@@ -33,7 +33,7 @@ namespace Bookstore.Controllers
 			{
 				return RedirectToAction(nameof(Error), new { message = "id não fornecido" });
 			}
-			Genre genre = await _service.FindById(id.Value);
+			Genre genre = await _service.Details(id.Value);
 			if (genre is null)
 			{
 				return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
