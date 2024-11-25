@@ -27,16 +27,19 @@ namespace Bookstore.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int? id)
         {
-            Genre genre = await _service.Details(id);
+			if (id is null)
+			{
+				return RedirectToAction(nameof(Error), new { message = "id não fornecido" });
+			}
+			Genre genre = await _service.FindById(id.Value);
+			if (genre is null)
+			{
+				return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
+			}
 
-            if (genre == null)
-            {
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(genre);
+			return View(genre);
         }
 
         [HttpPost]
