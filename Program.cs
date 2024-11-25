@@ -1,3 +1,7 @@
+using Bookstore.Data;
+using Bookstore.Services;
+using Microsoft.EntityFrameworkCore;
+
 namespace Bookstore
 {
     public class Program
@@ -9,6 +13,24 @@ namespace Bookstore
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
+			builder.Services.AddDbContext<BookstoreContext>(options =>
+			{
+				options.UseMySql(
+					builder
+						.Configuration
+						.GetConnectionString("BookstoreContext"),
+					ServerVersion
+						.AutoDetect(
+							builder
+								.Configuration
+								.GetConnectionString("BookstoreContext")
+						)
+				);
+			});
+
+            builder.Services.AddScoped<GenreService>();
+            builder.Services.AddScoped<SeedingService>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -17,6 +39,10 @@ namespace Bookstore
                 app.UseExceptionHandler("/Home/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
+            }
+            else
+            {
+                app.Services.CreateScope().ServiceProvider.GetRequiredService<SeedingService>().Seed();
             }
 
             app.UseHttpsRedirection();
