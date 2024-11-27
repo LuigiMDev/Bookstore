@@ -11,6 +11,7 @@ using Bookstore.Services;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using Bookstore.Models.ViewModels;
 using System.Diagnostics;
+using Bookstore.Services.Exceptions;
 
 namespace Bookstore.Controllers
 {
@@ -105,9 +106,18 @@ namespace Bookstore.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
             }
 
-            await _service.Delete(id.Value);
+            try
+            {
+                await _service.Delete(id.Value);
 
-            return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(Index));
+
+            }
+            catch (IntegrityException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
+
         }
 
         public IActionResult Error(string message)
