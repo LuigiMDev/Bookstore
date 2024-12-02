@@ -29,6 +29,7 @@ namespace Bookstore
 			});
 
             builder.Services.AddScoped<GenreService>();
+            builder.Services.AddScoped<BookService>();
             builder.Services.AddScoped<SeedingService>();
 
             var app = builder.Build();
