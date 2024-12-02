@@ -18,10 +18,12 @@ namespace Bookstore.Controllers
     public class BooksController : Controller
     {
         private readonly BookService _service;
+        private readonly GenreService _genreService;
 
-        public BooksController(BookService service)
+        public BooksController(BookService service, GenreService genreService)
         {
             _service = service;
+            _genreService = genreService;
         }
 
         public async Task<IActionResult> Index()
@@ -44,21 +46,36 @@ namespace Bookstore.Controllers
             return View(book);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            return View();
+            List<Genre> genres = await _genreService.FindAllAsync();
+
+            BookFormViewModel viewModel = new BookFormViewModel { Genres = genres };
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(Book book)
+        public async Task<IActionResult> Create(BookFormViewModel viewModel)
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                viewModel.Genres = await _genreService.FindAllAsync();
+                return View(viewModel);
             }
 
-            await _service.Create(book);
+            viewModel.Book.Genres = new List<Genre>();
+
+            foreach (int genreId in viewModel.SelectedGenresIds)
+            {
+                Genre genre = await _genreService.FindById(genreId);
+                if (genre is not null)
+                {
+                    viewModel.Book.Genres.Add(genre);
+                }
+            }
+
+            await _service.Create(viewModel.Book);
 
             return RedirectToAction(nameof(Index));
         }
@@ -76,20 +93,34 @@ namespace Bookstore.Controllers
                 return RedirectToAction(nameof(Error), new { message = "Id não foi encontrado" });
             }
 
-            return View(book);
+            List<Genre> genres = await _genreService.FindAllAsync();
+            BookFormViewModel viewModel = new BookFormViewModel { Book = book, Genres = genres };
+
+            return View(viewModel);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Book book, int id)
+        public async Task<IActionResult> Edit(BookFormViewModel viewModel, int id)
         {
             if (!ModelState.IsValid)
             {
                 return View();
             }
-            book.Id = id;
-            await _service.Edit(book);
-            return RedirectToAction(nameof(Index));
+            if (id != viewModel.Book.Id)
+            {
+                return RedirectToAction(nameof(Error), new { message = "Id's não condizentes" });
+            }
+
+            try
+            {
+                await _service.Edit(viewModel);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (ApplicationException ex)
+            {
+                return RedirectToAction(nameof(Error), new { message = ex.Message });
+            }
         }
 
         [HttpPost]
