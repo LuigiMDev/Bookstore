@@ -1,9 +1,8 @@
 ﻿using Bookstore.Data;
 using Bookstore.Models;
+using Bookstore.Models.ViewModels;
 using Bookstore.Services.Exceptions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using NuGet.Packaging.Signing;
 
 namespace Bookstore.Services
 {
@@ -43,7 +42,7 @@ namespace Bookstore.Services
 
         public async Task Edit(Genre genreEdited)
         {
-            bool hasAny = await _context.Genres.AnyAsync(x => x.Id == genreEdited.Id);
+            bool hasAny = await _context.Books.AnyAsync(x => x.Id == genreEdited.Id);
 
             if (!hasAny)
             {
@@ -52,13 +51,13 @@ namespace Bookstore.Services
 
             try
             {
-				_context.Genres.Update(genreEdited);
-				await _context.SaveChangesAsync();
-			} catch(DbUpdateException ex)
+                _context.Genres.Update(genreEdited);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateException ex)
             {
                 throw new DbConcorrencyException(ex.Message);
             }
-            
         }
 
         public async Task<Genre> FindById(int id)
